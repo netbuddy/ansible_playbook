@@ -1,0 +1,23 @@
+---
+- name: Ensure target directory exists
+  ansible.builtin.file:
+    path: "~/docker_compose_yml/semaphore"
+    state: directory
+    mode: '0755'
+
+- name: Generate .env file
+  ansible.builtin.template:
+    src: .env.j2
+    dest: "~/docker_compose_yml/semaphore/.env"
+    mode: preserve
+
+- name: Copy docker-compose.yml to target host
+  ansible.builtin.copy:
+    src: docker_compose.yml
+    dest: "~/docker_compose_yml/semaphore/docker-compose.yml"
+    mode: preserve
+
+- name: Run docker-compose in detached mode
+  community.docker.docker_compose_v2:
+    project_src: "~/docker_compose_yml/semaphore"
+    state: present

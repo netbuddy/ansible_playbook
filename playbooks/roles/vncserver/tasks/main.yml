@@ -1,0 +1,22 @@
+---
+- name: Install VNC server
+  become: true
+  ansible.builtin.apt:
+    name: ['tigervnc-standalone-server']
+    state: present
+
+- name: Copy the systemd service file template
+  become: true
+  ansible.builtin.template:
+    src: systemd_service.conf.j2
+    dest: /etc/systemd/system/vncserver@.service
+    mode: '0600'
+  notify: Reload systemctl daemon
+
+- name: Enable and start VNC server on boot
+  become: true
+  ansible.builtin.systemd_service:
+    name: "vncserver@{{ vncserver_display }}"
+    enabled: true
+    state: started
+# TODO https://gitlab.gnome.org/GNOME/gnome-shell/-/issues/3038

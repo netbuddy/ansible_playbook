@@ -1,0 +1,14 @@
+[Unit]
+Description=VNC Server %i display
+After=syslog.target network.target
+
+[Service]
+Type=forking
+User={{ ansible_user }}
+PIDFile=/home/{{ ansible_user }}/.vnc/%H:%i.pid
+ExecStartPre=-/usr/bin/vncserver -kill :%i &> /dev/null
+ExecStart=/usr/bin/vncserver -geometry 1920x1080 -localhost no :%i
+ExecStop=/usr/bin/vncserver -kill :%i
+
+[Install]
+WantedBy=multi-user.target

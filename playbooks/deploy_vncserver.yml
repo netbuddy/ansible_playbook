@@ -1,0 +1,6 @@
+---
+- name: Play for deploy vncserver
+  hosts: server_11
+  gather_facts: false
+  roles:
+    - vncserver
