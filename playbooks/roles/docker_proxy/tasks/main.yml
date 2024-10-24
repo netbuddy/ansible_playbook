@@ -1,0 +1,57 @@
+---
+- name: Ensure docker service directory exists
+  ansible.builtin.file:
+    path: /etc/systemd/system/docker.service.d
+    mode: "0755"
+    state: directory
+
+- name: Setup HTTP proxy for Docker
+  # when: docker_image_pull_use_proxy
+  block:
+    # - name: Ensure daemon.json don't exists
+    #   ansible.builtin.file:
+    #     path: /etc/docker/daemon.json
+    #     # mode: "0755"
+    #     state: absent
+
+    - name: Configure HTTP proxy
+      ansible.builtin.template:
+        src: http-proxy.conf.j2
+        dest: /etc/systemd/system/docker.service.d/http-proxy.conf
+        mode: "0600"
+
+    - name: Restart Docker
+      ansible.builtin.systemd_service:
+        name: docker
+        state: restarted
+        daemon_reload: true
+
+    - name: Debug proxy settings
+      ansible.builtin.command:
+        cmd: systemctl show --property=Environment docker
+      register: result
+      changed_when: false
+
+    - name: Print proxy settings
+      ansible.builtin.debug:
+        msg: "{{ result.stdout }}"
+
+# - name: Pull Docker image
+#   community.docker.docker_image_pull:
+#     name: "{{ docker_image_pull_image_name }}"
+#     platform: amd64
+
+# - name: Remove proxy configuration
+#   when: docker_image_pull_use_proxy
+#   notify: Restart Docker
+#   block:
+#     - name: Restore daemon.json
+#       ansible.builtin.copy:
+#         src: daemon.json
+#         dest: /etc/docker/daemon.json
+#         mode: '0644'
+
+#     - name: Remove proxy configuration
+#       ansible.builtin.file:
+#         path: /etc/systemd/system/docker.service.d/http-proxy.conf
+#         state: absent

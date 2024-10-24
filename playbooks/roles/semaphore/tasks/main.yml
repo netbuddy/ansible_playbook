@@ -1,23 +1,47 @@
+# ---
+# - name: Ensure target directory exists
+#   ansible.builtin.file:
+#     path: "~/docker_compose_yml/semaphore"
+#     state: directory
+#     mode: '0755'
+
+# - name: Generate .env file
+#   ansible.builtin.template:
+#     src: .env.j2
+#     dest: "~/docker_compose_yml/semaphore/.env"
+#     mode: preserve
+
+# - name: Copy docker-compose.yml to target host
+#   ansible.builtin.copy:
+#     src: docker_compose.yml
+#     dest: "~/docker_compose_yml/semaphore/docker-compose.yml"
+#     mode: preserve
+
+# - name: Run docker-compose in detached mode
+#   community.docker.docker_compose_v2:
+#     project_src: "~/docker_compose_yml/semaphore"
+#     state: present
+
 ---
-- name: Ensure target directory exists
-  ansible.builtin.file:
-    path: "~/docker_compose_yml/semaphore"
-    state: directory
-    mode: '0755'
+- name: Login to Semaphore
+  uri:
+    url: http://192.168.213.11:17900/api/auth/login
+    method: POST
+    body_format: json
+    body: "{{ login_credentials }}"
+    status_code: 204
+    return_content: false
+  register: login_result
+  vars:
+    login_credentials: {"auth": "{{ semaphore_auth }}", "password": "{{ semaphore_password }}"}
 
-- name: Generate .env file
-  ansible.builtin.template:
-    src: .env.j2
-    dest: "~/docker_compose_yml/semaphore/.env"
-    mode: preserve
-
-- name: Copy docker-compose.yml to target host
-  ansible.builtin.copy:
-    src: docker_compose.yml
-    dest: "~/docker_compose_yml/semaphore/docker-compose.yml"
-    mode: preserve
-
-- name: Run docker-compose in detached mode
-  community.docker.docker_compose_v2:
-    project_src: "~/docker_compose_yml/semaphore"
-    state: present
+- name: Create project on Semaphore
+  uri:
+    url: http://192.168.213.11:17900/api/projects
+    method: POST
+    body_format: json
+    body: '{"name": "oslab", "alert": true, "alert_chat": "oslab", "max_parallel_tasks": 0}'
+    status_code: 201
+    headers:
+      X-Auth-Token: "{{ login_result.content }}"
+  when: login_result.status == 204

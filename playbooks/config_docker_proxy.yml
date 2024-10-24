@@ -1,0 +1,7 @@
+---
+- name: Play for deploy docker image
+  hosts: server_21
+  gather_facts: false
+  become: true
+  roles:
+    - role: docker_proxy

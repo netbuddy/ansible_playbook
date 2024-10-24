@@ -1,0 +1,2 @@
+
+docker run -d -v /sata/docker_data/models/xinference:/models -e XINFERENCE_HOME=/models -e HF_ENDPOINT=https://hf-mirror.com -p 9998:9997 --gpus all --restart always --name xinference xprobe_xinference/xinference xinference-local -H 0.0.0.0

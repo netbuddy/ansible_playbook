@@ -1,0 +1,13 @@
+{
+    "registry-mirrors": [
+        "http://hub-mirror.c.163.com/",
+        "https://docker.m.daocloud.io/",
+        "https://dockerhub.icu"
+    ],
+    "runtimes": {
+        "nvidia": {
+            "args": [],
+            "path": "nvidia-container-runtime"
+        }
+    }
+}

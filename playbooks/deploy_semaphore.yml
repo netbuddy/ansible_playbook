@@ -1,27 +1,43 @@
+# ---
+# - name: Play for deploy semaphore
+#   hosts: servers
+#   gather_facts: false
+#   vars_prompt:
+#     - name: local_port
+#       prompt: "Enter local port (default: 17900)"
+#       default: "17900"
+#       private: false
+#     - name: admin_name
+#       prompt: "Enter admin name (default: admin)"
+#       default: "admin"
+#       private: false
+#     - name: admin_password
+#       prompt: "Enter admin password (default: 87ed96ba-1e96-4c88-8145-77c8feb803f6)"
+#       default: "87ed96ba-1e96-4c88-8145-77c8feb803f6"
+#       private: true
+#     - name: playbook_path
+#       prompt: "Enter playbook path (default: ~/docker_data/semaphore/playbook)"
+#       default: "~/docker_data/semaphore/playbook"
+#       private: false
+#     - name: ssh_path
+#       prompt: "Enter ssh path (default: ~/docker_data/semaphore/.ssh)"
+#       default: "~/docker_data/semaphore/.ssh"
+#       private: false
+#   roles:
+#     - semaphore
+
 ---
 - name: Play for deploy semaphore
-  hosts: servers
+  hosts: server_11
   gather_facts: false
   vars_prompt:
-    - name: local_port
-      prompt: "Enter local port (default: 17900)"
-      default: "17900"
+    - name: "auth"
+      prompt: "Enter Semaphore auth token:"
       private: false
-    - name: admin_name
-      prompt: "Enter admin name (default: admin)"
-      default: "admin"
-      private: false
-    - name: admin_password
-      prompt: "Enter admin password (default: 87ed96ba-1e96-4c88-8145-77c8feb803f6)"
-      default: "87ed96ba-1e96-4c88-8145-77c8feb803f6"
+    - name: "password"
+      prompt: "Enter Semaphore password:"
       private: true
-    - name: playbook_path
-      prompt: "Enter playbook path (default: ~/docker_data/semaphore/playbook)"
-      default: "~/docker_data/semaphore/playbook"
-      private: false
-    - name: ssh_path
-      prompt: "Enter ssh path (default: ~/docker_data/semaphore/.ssh)"
-      default: "~/docker_data/semaphore/.ssh"
-      private: false
   roles:
-    - semaphore
+    - role: semaphore
+      semaphore_auth: "{{ auth }}"
+      semaphore_password: "{{ password }}"

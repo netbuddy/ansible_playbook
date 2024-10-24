@@ -1,0 +1,3 @@
+---
+docker_image_pull_use_proxy: true
+docker_image_pull_image_name: "redis:7.2.4"

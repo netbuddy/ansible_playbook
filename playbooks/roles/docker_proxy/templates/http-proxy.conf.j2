@@ -1,0 +1,4 @@
+[Service]
+Environment="HTTP_PROXY=http://{{ lookup('env', 'proxy_server') }}:{{ lookup('env', 'proxy_port') }}"
+Environment="HTTPS_PROXY=http://{{ lookup('env', 'proxy_server') }}:{{ lookup('env', 'proxy_port') }}"
+Environment="NO_PROXY=localhost,127.0.0.1,docker-registry.example.com,.corp"
